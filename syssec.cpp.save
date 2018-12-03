@@ -1,0 +1,46 @@
+#include "syssec.h"
+#include "ui_syssec.h"
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui.hpp>
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+
+void capture_img(void)
+{
+   // local variable declaration
+	cv::Mat result;
+ 
+	cv::VideoCapture cap(0); // open the default camera
+       	cv::Mat frame,gray,BW;
+
+	cap >> frame; // get a new frame from camera
+	cv::cvtColor(frame, gray, COLOR_BGR2GRAY);
+	cv::threshold( gray, result, 100, 255, THRESH_BINARY_INV );
+	cv::imwrite("image1.png", result);
+}
+
+
+SysSec::SysSec(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::SysSec)
+{
+    ui->setupUi(this);
+
+}
+
+SysSec::~SysSec()
+{
+    delete ui;
+}
+
+void SysSec::on_Capture_clicked()
+{
+	capture_img();
+    QPixmap img = QPixmap("/home/debian/Desktop/app/image1.png");
+    ui->img_label->setPixmap(img);
+}
+
+
