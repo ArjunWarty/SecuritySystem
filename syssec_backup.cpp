@@ -1,18 +1,3 @@
-
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <arpa/inet.h>
-
-#include <fstream>
-
-
 #include "syssec.h"
 #include "ui_syssec.h"
 #include "opencv2/shape.hpp"
@@ -25,8 +10,6 @@
 
 using namespace std;
 using namespace cv;
-
-#define LED_PATH "sys/class/leds/beaglebone:green:usr0"
 
 static int person = 0; 
 
@@ -60,36 +43,6 @@ static vector<Point> simpleContour( const Mat& currentQuery, int n=300 )
     return cont;
 }
 
-void SendData (void)
- 
-{
-    int sfd =0;
-    int b;
-    char rbuff[1024];    
-    char sendbuffer[100];
-
-    struct sockaddr_in serv_addr;
-
-    memset(rbuff, '0', sizeof(rbuff));
-    sfd = socket(AF_INET, SOCK_STREAM, 0);
-
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(5000);
-    serv_addr.sin_addr.s_addr = inet_addr("192.168.1.4");
-
-    b=connect(sfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
-
-    FILE *fp = fopen("/home/debian/Desktop/app/image1.png", "rb");
-
-    while( (b = fread(sendbuffer, 1, sizeof(sendbuffer), fp))>0 ){
-        send(sfd, sendbuffer, b, 0);
-    }
-
-    fclose(fp);
-
-}
-
-
 void capture_img(void)
 {
    // local variable declaration
@@ -99,14 +52,13 @@ void capture_img(void)
 	cv::Mat frame,gray,BW;
 	cap >> frame; // get a new frame from camera
  	resize(frame, frame, sz2Sh, 0, 0, INTER_LINEAR);
-	cv::imwrite("image1.png", frame);
-//        SendData();
+	cv::imwrite("image1.png", frame);   
 	cv::cvtColor(frame, gray, COLOR_BGR2GRAY);
 	cv::threshold( gray, result, 100, 255, THRESH_BINARY_INV );
 	cv::imwrite("image2.png", result);
 }
 
-float image_recog (void)
+float image_recog (void) 
 {
 
     string path = "/home/debian/Desktop/app/sample_set/"; //fixme 
@@ -143,15 +95,6 @@ float image_recog (void)
     return bestDis;
 }
 
-void LED_Func(bool n){
-    if (n == true){
-       cout<< "True";
-    }
-    else {
-       cout<< "False";
-    }
-}
-
 
 
 
@@ -166,6 +109,7 @@ SysSec::~SysSec()
 {
     delete ui;
 }
+
 void SysSec::on_Capture_clicked()
 {
     capture_img();

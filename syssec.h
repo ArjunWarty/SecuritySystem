@@ -2,6 +2,7 @@
 #define SYSSEC_H
 
 #include <QMainWindow>
+#include <QString>
 
 namespace Ui {
 class SysSec;
